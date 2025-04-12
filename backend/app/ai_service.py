@@ -18,21 +18,35 @@ generation_config = genai_types.GenerationConfig(
     temperature=1.2,
 )
 
-async def get_book_recommendations(query: str, max_results: int = 12) -> list:
+async def get_book_recommendations(query: str, max_results: int = 12, exclude_titles: list = None) -> list:
     """
     Get book recommendations from Google Generative AI based on query
+    
+    Args:
+        query: Search query for book recommendations
+        max_results: Maximum number of books to return
+        exclude_titles: List of book titles to exclude from recommendations
     """
-
+    
     model = genai.GenerativeModel(
         'gemini-2.0-flash', 
         generation_config=generation_config,
     )
+    
+    exclusion_text = ""
+    if exclude_titles and len(exclude_titles) > 0:
+        exclusion_text = f"""
+        IMPORTANT EXCLUSION: Do NOT include any of the following books in your recommendations:
+        {', '.join(exclude_titles)}
+        """
 
     prompt = f"""
     You are an expert book recommendation/finder system. Based on the query, suggest books.
     focus mostly on recommending books that are similar plot-wise, theme-wise, or stylistically.
     For each recommendation, include: Title of the book, genre, and a short paragraph explaining why it was chosen, detailing aspects of its plot, themes, and mood that match the query.
     Take into account: if the query is a book title, suggest similar books in the same genre or style. If the query is a general description, suggest books that fit that description. If the user is looking for a specific genre, suggest only books in that genre.
+
+    {exclusion_text}
 
     IMPORTANT:
     Respond ONLY with a valid JSON array containing exactly {max_results} recommendations (or fewer if not enough relevant books are found). Order it by relevance.
@@ -43,7 +57,7 @@ async def get_book_recommendations(query: str, max_results: int = 12) -> list:
     {{
       "title": "Book Title",
       "genre": "Genre of the book",
-      "reason": "A detailed explanation connecting the book’s stylistic elements with the provided description."
+      "reason": "A detailed explanation connecting the book's stylistic elements with the provided description."
     }}
 
     Query: {query}

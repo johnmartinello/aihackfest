@@ -27,6 +27,19 @@
       <p>No books were found matching your query.</p>
     </div>
 
+    <div class="load-more-container" v-if="books.length > 0">
+      <button 
+        @click="loadMoreBooks" 
+        class="load-more-button"
+        :disabled="isLoadingMore"
+      >
+        <span v-if="isLoadingMore">
+          <div class="load-more-spinner"></div>
+          Searching More Books...
+        </span>
+        <span v-else>Recommend More Books</span>
+      </button>
+    </div>
   </div>
 </template>
 
@@ -144,5 +157,48 @@ export default {
   color: #bbb;
 }
 
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
 
+.load-more-button {
+  padding: 12px 30px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.load-more-button:hover {
+  background-color: #2980b9;
+}
+
+.load-more-button:disabled {
+  background-color: #444;
+  color: #888;
+  cursor: not-allowed;
+}
+
+.load-more-spinner {
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid white;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 </style>

@@ -5,6 +5,10 @@ from datetime import datetime
 class BookSearchRequest(BaseModel):
     query: str
 
+class MoreBooksRequest(BaseModel):
+    search_id: int
+    count: int = 8
+
 class BookResponse(BaseModel):
     id: int
     title: str

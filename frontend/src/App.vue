@@ -5,7 +5,12 @@
     </header>
     <main>
       <book-search @books-loaded="handleBooksLoaded"></book-search>
-      <book-results v-if="hasResults" :books="books"></book-results>
+      <book-results 
+        v-if="hasResults" 
+        :books="books" 
+        @load-more="loadMoreBooks"
+        :isLoadingMore="isLoadingMore"
+      ></book-results>
     </main>
     <footer>
       <p> Application made for AI Hackfest (2025) in one day, by João Lucas Martinello (and AIs)</p>
@@ -16,6 +21,7 @@
 <script>
 import BookSearch from './components/BookSearch.vue';
 import BookResults from './components/BookResults.vue';
+import axios from 'axios';
 
 export default {
   name: 'App',
@@ -26,13 +32,37 @@ export default {
   data() {
     return {
       books: [],
-      hasResults: false
+      hasResults: false,
+      searchId: null,
+      searchQuery: '',
+      isLoadingMore: false
     };
   },
   methods: {
     handleBooksLoaded(data) {
       this.books = data.books;
+      this.searchId = data.id;
+      this.searchQuery = data.query;
       this.hasResults = true;
+    },
+    async loadMoreBooks() {
+      if (!this.searchId || this.isLoadingMore) return;
+      
+      this.isLoadingMore = true;
+      
+      try {
+        const response = await axios.post('http://localhost:8000/api/more-books', {
+          search_id: this.searchId,
+          count: 8
+        });
+        
+        // Update books with the full list (including new recommendations)
+        this.books = response.data.books;
+      } catch (error) {
+        console.error('Error loading more books:', error);
+      } finally {
+        this.isLoadingMore = false;
+      }
     }
   }
 };
