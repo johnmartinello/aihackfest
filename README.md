@@ -2,9 +2,11 @@
 
 ## Overview
 
-This project is a Book Recommendation System built for the **AI Hackfest (2025)** event. It demonstrates the use of Generative AI to provide personalized book suggestions based on user queries.
+This project is a Book Recommendation System built for the **AI Hackfest (2025)** event. It demonstrates the use of Generative AI to provide personalized book suggestions based on user queries. [Project Demo](https://youtu.be/OzQ4bdLvlmE)
 
 **This application was developed in less than 12 hours.**
+
+
 
 ## Functionality
 
