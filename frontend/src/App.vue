@@ -71,7 +71,7 @@ export default {
         query: data.query,
         timestamp: new Date().toISOString(),
         books: data.books,
-        previewBooks: data.books.slice(0, 3)  // Store only first 3 books as preview
+        previewBooks: data.books.slice(0, 3)  
       });
     },
     async loadMoreBooks() {
@@ -82,7 +82,7 @@ export default {
       try {
         const response = await axios.post('http://localhost:8000/api/more-books', {
           search_id: this.searchId,
-          count: 6 // Request 6 more books
+          count: 6 
         });
         
         // Update books with the full list (including new recommendations)

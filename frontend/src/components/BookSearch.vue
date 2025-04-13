@@ -63,7 +63,7 @@ export default {
           }
         }, 2000);
         
-        const response = await axios.post('http://localhost:8000/api/search', {
+        const response = await axios.post('http://localhost:8001/api/search', {
           query: this.query
         });
         

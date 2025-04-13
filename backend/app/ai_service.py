@@ -88,3 +88,50 @@ async def get_book_recommendations(query: str, max_results: int = 12, exclude_ti
             {"title": "Fallback: To Kill a Mockingbird", "genre": "Classic", "reason": "A powerful story."}
         ]
 
+async def generate_user_profile(queries: list) -> str:
+    """
+    Generate a funny user profile based on their search history
+    
+    Args:
+        queries: List of search queries the user has made
+    
+    Returns:
+        A streaming response for the generated profile
+    """
+    # For streaming, we'll use a different configuration
+    stream_generation_config = genai_types.GenerationConfig(
+        temperature=1.2,
+    )
+    
+    model = genai.GenerativeModel(
+        'gemini-2.0-flash',
+        generation_config=stream_generation_config,
+    )
+    
+    # Join the queries into a single string for context
+    search_history = "\n- ".join(queries)
+    
+    prompt = f"""
+    Based on this person's book search history, create a funny, light-hearted profile of them. 
+    Be creative and humorous but remain tasteful. Imagine what kind of person they might be based on their literary interests.
+    Include things like:
+    - What their personality might be like
+    - What they might do for fun
+    - A funny quirk they might have
+    - Their ideal weekend
+    - Be playful and witty!
+    
+    Here are their search queries:
+    - {search_history}
+    
+    Create a profile that's around 150-200 words, with a touch of humor.
+    """
+    
+    try:
+        # Return the streaming response directly
+        return await model.generate_content_async(prompt, stream=True)
+    except Exception as e:
+        # For errors, we'll return a non-streaming response with an error message
+        print(f"Error generating user profile: {e}")
+        return "Sorry, I couldn't create your profile at the moment. Maybe your book choices were too complex for me to analyze!"
+

@@ -3,11 +3,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import json
 from contextlib import asynccontextmanager
+from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
+from typing import List
 
 from app.models import get_db, create_tables, BookSearch, Book
 from app.schemas import BookSearchRequest, BookSearchResponse, BookResponse, MoreBooksRequest
-from app.ai_service import get_book_recommendations
+from app.ai_service import get_book_recommendations, generate_user_profile
 from app.library_service import search_book_by_title, extract_book_info
+
+# New schema for profile generation
+class UserProfileRequest(BaseModel):
+    queries: List[str]
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -27,6 +34,32 @@ app.add_middleware(
 @app.get("/")
 async def root():
     return {"message": "Book Recommendation API is running"}
+
+@app.post("/api/generate-profile")
+async def create_user_profile(request: UserProfileRequest):
+    """
+    Generate a funny user profile based on search history
+    """
+    if len(request.queries) < 2:
+        raise HTTPException(status_code=400, detail="At least 2 search queries are required to generate a profile")
+    
+    # Get the streaming response from the AI service
+    stream_response = await generate_user_profile(request.queries)
+    
+    # Create an async generator that yields chunks of the response
+    async def profile_stream_generator():
+        try:
+            async for chunk in stream_response:
+                if hasattr(chunk, "text"):
+                    yield chunk.text
+        except Exception as e:
+            yield f"Error generating profile: {str(e)}"
+    
+    # Return a StreamingResponse that will stream the content to the client
+    return StreamingResponse(
+        profile_stream_generator(),
+        media_type="text/plain"
+    )
 
 @app.post("/api/search", response_model=BookSearchResponse)
 async def search_books(request: BookSearchRequest, db: Session = Depends(get_db)):
@@ -190,4 +223,4 @@ async def get_search_history(db: Session = Depends(get_db)):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8001)  # Changed port from 8000 to 8001
