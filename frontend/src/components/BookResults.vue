@@ -58,9 +58,8 @@ export default {
   },
   methods: {
     redirectToGoogleSearch(book) {
-      const query = `${book.title} (${book.author || 'Unknown Author'})`;
-      const url = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
-      window.open(url, '_blank');
+      const query = `${book.title} ${book.author ? `(${book.author})` : ''}`;
+      window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
     },
     loadMoreBooks() {
       this.$emit('load-more');
@@ -84,12 +83,12 @@ export default {
 
 .book-cards {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* Changed to display exactly 4 cards per row */
-  gap: 20px; /* Reduced gap slightly to accommodate more cards */
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
 }
 
 .book-card {
-  background: #2d2d2d; 
+  background: #2d2d2d;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
   overflow: hidden;
@@ -108,7 +107,7 @@ export default {
 .book-cover {
   height: 250px;
   overflow: hidden;
-  background: #222; 
+  background: #222;
   display: flex;
   justify-content: center;
 }

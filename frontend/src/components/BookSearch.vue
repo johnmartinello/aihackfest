@@ -55,8 +55,6 @@ export default {
       this.processingStage = 'ai';
       
       try {
-        // Add a delay before changing to the structuring stage to simulate the process
-        // This ensures users see the initial "Searching..." message
         setTimeout(() => {
           if (this.isLoading) {
             this.processingStage = 'structuring';
@@ -67,7 +65,6 @@ export default {
           query: this.query
         });
         
-        // Emit the result to parent component
         this.$emit('books-loaded', response.data);
       } catch (error) {
         console.error('Error searching for books:', error);

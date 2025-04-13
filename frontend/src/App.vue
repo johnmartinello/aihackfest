@@ -3,7 +3,6 @@
     <header>
       <h1>Book Recommendation System</h1>
       <div class="history-toggle" @click="toggleHistory">
-
         <span v-if="!showHistory">History</span>
         <span v-else>Hide</span>
       </div>
@@ -55,7 +54,6 @@ export default {
     };
   },
   created() {
-    // Load search history from localStorage when the app starts
     this.loadSearchHistory();
   },
   methods: {
@@ -65,7 +63,6 @@ export default {
       this.searchQuery = data.query;
       this.hasResults = true;
       
-      // Save this search to history
       this.saveToHistory({
         id: data.id,
         query: data.query,
@@ -85,10 +82,8 @@ export default {
           count: 6 
         });
         
-        // Update books with the full list (including new recommendations)
         this.books = response.data.books;
         
-        // Update this search in history with new books
         this.updateHistoryItem({
           id: this.searchId,
           query: this.searchQuery,
@@ -105,44 +100,33 @@ export default {
       this.showHistory = !this.showHistory;
     },
     loadFromHistory(item) {
-      // Load books from history item
       this.books = item.books;
       this.searchId = item.id;
       this.searchQuery = item.query;
       this.hasResults = true;
-      
-      // Hide history after selection
       this.showHistory = false;
     },
     saveToHistory(search) {
-      // Check if this search already exists in history
       const existingIndex = this.searchHistory.findIndex(item => item.query === search.query);
       
       if (existingIndex > -1) {
-        // Update existing search
         this.searchHistory.splice(existingIndex, 1);
       }
       
-      // Add to the beginning of history array
       this.searchHistory.unshift(search);
       
-      // Limit history to 10 items
       if (this.searchHistory.length > 10) {
         this.searchHistory = this.searchHistory.slice(0, 10);
       }
       
-      // Save to localStorage
       this.saveSearchHistory();
     },
     updateHistoryItem(updatedSearch) {
       const index = this.searchHistory.findIndex(item => item.id === updatedSearch.id);
       
       if (index > -1) {
-        // Update the search in history
         this.searchHistory[index].books = updatedSearch.books;
         this.searchHistory[index].previewBooks = updatedSearch.previewBooks;
-        
-        // Save to localStorage
         this.saveSearchHistory();
       }
     },
@@ -222,8 +206,6 @@ header h1 {
 .history-toggle:hover {
   background-color: #404040;
 }
-
-
 
 main {
   margin-bottom: 50px;

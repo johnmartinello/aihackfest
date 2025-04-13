@@ -16,9 +16,7 @@ async def search_book_by_title(title: str) -> dict:
         try:
             response = await client.get(url)
             response.raise_for_status()  
-            
-            data = response.json()
-            return data
+            return response.json()
         except httpx.RequestError as e:
             print(f"Error searching for book '{title}': {e}")
             return {"error": str(e), "docs": []}
@@ -35,13 +33,11 @@ def extract_book_info(open_library_data: dict) -> dict:
     
     book_data = open_library_data["docs"][0]
     
-    # Construct cover URL if cover_i exists
     cover_url = None
     if "cover_i" in book_data:
         cover_id = book_data["cover_i"]
         cover_url = f"https://covers.openlibrary.org/b/id/{cover_id}-M.jpg"
     
-    # Extract author
     author = None
     if "author_name" in book_data and book_data["author_name"]:
         author = book_data["author_name"][0]

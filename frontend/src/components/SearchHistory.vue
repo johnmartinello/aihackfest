@@ -57,8 +57,6 @@
 </template>
 
 <script>
-
-
 export default {
   name: 'SearchHistory',
   props: {
@@ -97,7 +95,6 @@ export default {
       this.userProfile = '';
       
       try {
-        // Check if backend server is available
         try {
           const healthCheck = await fetch('http://localhost:8001/');
           if (!healthCheck.ok) {
@@ -107,12 +104,8 @@ export default {
           throw new Error('Backend server appears to be offline. Please make sure the backend is running.');
         }
         
-        // Extract queries from search history
         const queries = this.searchHistory.map(item => item.query);
         
-        console.log('Sending profile request with queries:', queries);
-        
-        // Use fetch with streaming instead of axios
         const response = await fetch('http://localhost:8001/api/generate-profile', {
           method: 'POST',
           headers: {
@@ -122,23 +115,19 @@ export default {
         });
         
         if (!response.ok) {
-          console.error('Profile generation failed with status:', response.status);
           throw new Error(`HTTP error! status: ${response.status}. Make sure the backend server is running.`);
         }
         
-        // Create a reader for the stream
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         
-        // Read stream chunks and append to profile
         let streamComplete = false;
         while (!streamComplete) {
           const { done, value } = await reader.read();
           if (done) {
             streamComplete = true;
           } else {
-            const chunk = decoder.decode(value);
-            this.userProfile += chunk;
+            this.userProfile += decoder.decode(value);
           }
         }
       } catch (error) {
@@ -153,10 +142,8 @@ export default {
     }
   },
   computed: {
-    // Format the profile text with line breaks
     formattedProfile() {
-      if (!this.userProfile) return '';
-      return this.userProfile.replace(/\n/g, '<br>');
+      return this.userProfile ? this.userProfile.replace(/\n/g, '<br>') : '';
     }
   }
 };
