@@ -1,14 +1,15 @@
 <template>
   <div class="search-container">
     <div class="search-box">
-      <input 
-        type="text" 
+      <textarea 
         v-model="query" 
+        @input="adjustHeight($event)" 
         @keyup.enter="searchBooks" 
         placeholder="What kind of books are you looking for?"
         :disabled="isLoading"
         class="search-input"
-      />
+        rows="1"
+      ></textarea>
       <button 
         @click="searchBooks" 
         class="search-button"
@@ -72,6 +73,11 @@ export default {
       } finally {
         this.isLoading = false;
       }
+    },
+    adjustHeight(event) {
+      const textarea = event.target;
+      textarea.style.height = 'auto';
+      textarea.style.height = `${textarea.scrollHeight}px`;
     }
   }
 };
@@ -99,6 +105,7 @@ export default {
   outline: none;
   background-color: #333; 
   color: #e0e0e0; 
+  resize: none; /* Prevent manual resizing */
 }
 
 .search-input::placeholder {
